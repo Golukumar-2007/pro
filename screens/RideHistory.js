@@ -26,11 +26,10 @@ export default class RideHistoryScreen extends Component {
 
   getTransactions = () => {
     db.collection("transactions")
-      .limit(10)
       .get()
       .then(snapshot => {
-        snapshot.docs.map(doc => { 
-           this.setState({
+        snapshot.docs.map(doc => {
+          this.setState({
             allTransactions: [...this.state.allTransactions, doc.data()],
             lastVisibleTransaction: doc
           });
@@ -60,23 +59,6 @@ export default class RideHistoryScreen extends Component {
       });
   };
 
-  fetchMoreTransactions = async bikeId => {
-    bikeId = bikeId.toUpperCase().trim();
-
-    const { lastVisibleTransaction, allTransactions } = this.state;
-    const query = await db
-      .collection("transactions")
-      .where("bike_id", "==", bikeId)
-      .startAfter(lastVisibleTransaction)
-      .limit(10)
-      .get();
-    query.docs.map(doc => {
-      this.setState({
-        allTransactions: [...this.state.allTransactions, doc.data()],
-        lastVisibleTransaction: doc
-      });
-    });
-  };
 
   renderItem = ({ item, i }) => {
     var date = item.date
@@ -156,19 +138,13 @@ export default class RideHistoryScreen extends Component {
           </View>
         </View>
         <View style={styles.lowerContainer}>
-
           <FlatList
-            data={allTransactions}
-            renderItem={this.renderItem}
-            keyExtractor={(item, index) => index.toString()}
-            onEndReached={() => 
-              this.fetchMoreTransactions(searchText)}
-            onEndReachedThreshold={0.7}
-          /> 
-
-
-           
-           
+            data={ allTransactions } 
+            renderItem={this.renderItem } 
+            keyExtractor={
+              (item, index) => index.toString()
+            }
+          />
         </View>
       </View>
     );
